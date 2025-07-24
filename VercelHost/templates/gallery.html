@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Gallery - Victory Rehabilitation Centre{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-brand-indigo to-purple-800 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="font-poppins font-bold text-4xl md:text-5xl mb-6">Gallery</h1>
+        <p class="text-xl md:text-2xl text-brand-green">Moments of hope, healing, and recovery</p>
+    </div>
+</section>
+
+<!-- Upload Section -->
+{% if current_user.is_authenticated %}
+<section class="py-8 bg-gray-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-4">Share a Moment</h3>
+            <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="file" class="block text-sm font-medium text-gray-700 mb-2">Choose Image</label>
+                        <input 
+                            type="file" 
+                            id="file" 
+                            name="file" 
+                            accept="image/*" 
+                            required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-indigo focus:border-transparent"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">PNG, JPG, JPEG, GIF, WebP files only. Max 16MB.</p>
+                    </div>
+                    <div>
+                        <label for="caption" class="block text-sm font-medium text-gray-700 mb-2">Caption (Optional)</label>
+                        <input 
+                            type="text" 
+                            id="caption" 
+                            name="caption" 
+                            maxlength="255"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-indigo focus:border-transparent"
+                            placeholder="Add a caption for your image..."
+                        >
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-upload mr-2"></i>Upload Image
+                    </button>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 text-sm mt-1 mr-2"></i>
+                        <p class="text-sm text-yellow-700">
+                            All uploaded images require admin approval before being displayed in the gallery.
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Images -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if images %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for image in images %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="aspect-square bg-gray-200 overflow-hidden">
+                        <img 
+                            src="{{ url_for('static', filename='uploads/' + image.filename) }}" 
+                            alt="{{ image.caption or 'Gallery image' }}"
+                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+                            onclick="openModal('{{ url_for('static', filename='uploads/' + image.filename) }}', '{{ image.caption or '' }}', '{{ image.user.username }}', '{{ image.created_at.strftime('%B %d, %Y') }}')"
+                        >
+                    </div>
+                    {% if image.caption %}
+                    <div class="p-4">
+                        <p class="text-gray-600 text-sm">{{ image.caption }}</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-400">by {{ image.user.username }}</span>
+                            <span class="text-xs text-gray-400">{{ image.created_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <i class="fas fa-images text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="font-poppins font-semibold text-xl text-gray-600 mb-2">No images yet</h3>
+                <p class="text-gray-500 mb-6">Be the first to share a moment from your recovery journey.</p>
+                {% if current_user.is_authenticated %}
+                    <a href="#upload" class="btn-primary">Upload First Image</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn-primary">Login to Upload</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-4xl max-h-full overflow-hidden">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 id="modalCaption" class="font-poppins font-semibold text-lg text-brand-indigo"></h3>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-4">
+            <img id="modalImage" src="" alt="" class="w-full h-auto max-h-96 object-contain">
+            <div id="modalInfo" class="mt-4 text-sm text-gray-600"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Community Guidelines -->
+<section class="py-16 bg-gray-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <h2 class="font-poppins font-bold text-2xl text-brand-indigo mb-6">Community Guidelines</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-semibold text-lg text-green-600 mb-3">
+                        <i class="fas fa-check-circle mr-2"></i>What to Share
+                    </h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>• Inspiring moments of recovery</li>
+                        <li>• Facility activities and events</li>
+                        <li>• Positive milestones and achievements</li>
+                        <li>• Community gatherings and support</li>
+                        <li>• Educational and wellness content</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg text-red-600 mb-3">
+                        <i class="fas fa-times-circle mr-2"></i>Please Don't Share
+                    </h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>• Personal information of others</li>
+                        <li>• Images without consent</li>
+                        <li>• Inappropriate or offensive content</li>
+                        <li>• Content promoting substance use</li>
+                        <li>• Copyrighted material</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <i class="fas fa-shield-alt text-blue-500 text-lg mt-1 mr-3"></i>
+                    <div class="text-sm text-blue-700">
+                        <p class="font-semibold mb-1">Privacy & Moderation</p>
+                        <p>All images are reviewed by our team before being published. We respect privacy and maintain a safe, supportive environment for everyone in our community.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function openModal(imageSrc, caption, username, date) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('modalCaption').textContent = caption || 'Gallery Image';
+    document.getElementById('modalInfo').innerHTML = `<span>Shared by ${username} on ${date}</span>`;
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

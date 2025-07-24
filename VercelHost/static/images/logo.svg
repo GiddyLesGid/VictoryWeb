@@ -1,0 +1,46 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#4B0082" stroke="#90EE90" stroke-width="3"/>
+  
+  <!-- Inner Circle -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#90EE90" stroke-width="2" opacity="0.7"/>
+  
+  <!-- Victory Symbol - Stylized V -->
+  <path d="M60 70 L100 130 L140 70" fill="none" stroke="#90EE90" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Heart Symbol (representing care and compassion) -->
+  <path d="M85 85 C85 80, 90 75, 95 75 C100 75, 105 80, 105 85 C105 80, 110 75, 115 75 C120 75, 125 80, 125 85 C125 95, 105 110, 100 115 C95 110, 75 95, 85 85 Z" fill="#90EE90" opacity="0.8"/>
+  
+  <!-- Cross Symbol (representing healing and hope) -->
+  <rect x="95" y="45" width="10" height="30" fill="#90EE90"/>
+  <rect x="85" y="55" width="30" height="10" fill="#90EE90"/>
+  
+  <!-- Healing Hands -->
+  <path d="M70 140 C70 135, 75 130, 80 130 C85 130, 90 135, 90 140 L90 155 C90 160, 85 165, 80 165 C75 165, 70 160, 70 155 Z" fill="#90EE90" opacity="0.6"/>
+  <path d="M110 140 C110 135, 115 130, 120 130 C125 130, 130 135, 130 140 L130 155 C130 160, 125 165, 120 165 C115 165, 110 160, 110 155 Z" fill="#90EE90" opacity="0.6"/>
+  
+  <!-- Text Elements -->
+  <text x="100" y="185" font-family="Poppins, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#90EE90">
+    VICTORY
+  </text>
+  <text x="100" y="195" font-family="Poppins, sans-serif" font-size="8" text-anchor="middle" fill="#90EE90" opacity="0.8">
+    REHABILITATION
+  </text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="50" cy="60" r="3" fill="#90EE90" opacity="0.5"/>
+  <circle cx="150" cy="60" r="3" fill="#90EE90" opacity="0.5"/>
+  <circle cx="40" cy="100" r="2" fill="#90EE90" opacity="0.4"/>
+  <circle cx="160" cy="100" r="2" fill="#90EE90" opacity="0.4"/>
+  <circle cx="50" cy="140" r="3" fill="#90EE90" opacity="0.5"/>
+  <circle cx="150" cy="140" r="3" fill="#90EE90" opacity="0.5"/>
+  
+  <!-- Subtle Gradient Overlay -->
+  <defs>
+    <radialGradient id="logoGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#4B0082;stop-opacity:0.05"/>
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#logoGradient)"/>
+</svg>

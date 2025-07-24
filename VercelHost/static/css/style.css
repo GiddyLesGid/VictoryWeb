@@ -1,0 +1,321 @@
+:root {
+    --brand-indigo: #4B0082;
+    --brand-green: #90EE90;
+    --text-gray: #6B7280;
+    --light-gray: #F9FAFB;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navigation Styles */
+.nav-link {
+    @apply text-gray-700 hover:text-brand-indigo px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+}
+
+.nav-link:hover {
+    color: var(--brand-indigo);
+}
+
+.mobile-nav-link {
+    @apply block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brand-indigo hover:bg-gray-50 transition-colors duration-200;
+}
+
+/* Button Styles */
+.btn-primary {
+    @apply bg-brand-indigo text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-200 inline-flex items-center justify-center;
+    background-color: var(--brand-indigo);
+}
+
+.btn-primary:hover {
+    background-color: #6B46C1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(75, 0, 130, 0.3);
+}
+
+.btn-secondary {
+    @apply bg-white text-brand-indigo px-6 py-3 rounded-lg font-semibold border-2 border-brand-indigo hover:bg-brand-indigo hover:text-white transition-all duration-200 inline-flex items-center justify-center;
+    border-color: var(--brand-indigo);
+    color: var(--brand-indigo);
+}
+
+.btn-secondary:hover {
+    background-color: var(--brand-indigo);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(75, 0, 130, 0.3);
+}
+
+/* Flash Messages */
+.flash-message {
+    @apply px-4 py-3 rounded-lg mb-4 flex items-center justify-between;
+}
+
+.flash-success {
+    @apply bg-green-100 border border-green-400 text-green-700;
+}
+
+.flash-error {
+    @apply bg-red-100 border border-red-400 text-red-700;
+}
+
+.flash-info {
+    @apply bg-blue-100 border border-blue-400 text-blue-700;
+}
+
+.flash-warning {
+    @apply bg-yellow-100 border border-yellow-400 text-yellow-700;
+}
+
+/* Card Hover Effects */
+.card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Hero Section Gradients */
+.hero-gradient {
+    background: linear-gradient(135deg, var(--brand-indigo) 0%, #6B46C1 100%);
+}
+
+/* Form Styles */
+.form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-indigo focus:border-transparent transition-all duration-200;
+}
+
+.form-input:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--brand-indigo);
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+/* Gallery Styles */
+.gallery-item {
+    @apply relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300;
+}
+
+.gallery-item img {
+    @apply w-full h-full object-cover transition-transform duration-300;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center;
+}
+
+.gallery-overlay:hover {
+    background-opacity: 0.3;
+}
+
+/* Service Cards */
+.service-card {
+    @apply bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 border-l-4 border-brand-green;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    border-left-color: var(--brand-indigo);
+}
+
+/* Values Cards */
+.value-card {
+    @apply bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300;
+}
+
+.value-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon Styles */
+.icon-primary {
+    color: var(--brand-indigo);
+}
+
+.icon-secondary {
+    color: var(--brand-green);
+}
+
+/* Loading Animation */
+.loading {
+    @apply inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white;
+}
+
+/* Mobile Menu Animation */
+.mobile-menu-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.mobile-menu-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+/* Scroll Animations */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--brand-indigo);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6B46C1;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+    .hero-gradient {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .service-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Contact Form Enhancements */
+.contact-form {
+    @apply space-y-6;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus {
+    box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.1);
+}
+
+/* Admin Panel Styles */
+.admin-header {
+    background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+}
+
+.admin-card {
+    @apply bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500;
+}
+
+.status-pending {
+    @apply bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold;
+}
+
+.status-approved {
+    @apply bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold;
+}
+
+/* Gallery Modal */
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+}
+
+/* Animation Classes */
+.slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Focus Styles for Accessibility */
+.focus\:ring-brand-indigo:focus {
+    --tw-ring-color: var(--brand-indigo);
+}
+
+/* Brand Color Utilities */
+.text-brand-indigo {
+    color: var(--brand-indigo);
+}
+
+.text-brand-green {
+    color: var(--brand-green);
+}
+
+.bg-brand-indigo {
+    background-color: var(--brand-indigo);
+}
+
+.bg-brand-green {
+    background-color: var(--brand-green);
+}
+
+.border-brand-indigo {
+    border-color: var(--brand-indigo);
+}
+
+.border-brand-green {
+    border-color: var(--brand-green);
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        background: white !important;
+        color: black !important;
+        border: 1px solid black !important;
+    }
+}

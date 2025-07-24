@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Admissions - Victory Rehabilitation Centre{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-brand-indigo to-purple-800 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="font-poppins font-bold text-4xl md:text-5xl mb-6">Admissions</h1>
+        <p class="text-xl md:text-2xl text-brand-green">Taking the first step towards recovery</p>
+    </div>
+</section>
+
+<!-- Admissions Process -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="font-poppins font-bold text-3xl md:text-4xl text-brand-indigo mb-4">Admissions Process</h2>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                We've made our admissions process as simple and comfortable as possible. 
+                Our caring staff is here to guide you through every step of the way.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="text-center">
+                <div class="bg-brand-green rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-phone text-white text-2xl"></i>
+                </div>
+                <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-4">1. Initial Contact</h3>
+                <p class="text-gray-600">
+                    Call us or visit our facility for a confidential consultation. 
+                    We're available 24/7 to answer your questions and provide support.
+                </p>
+                <div class="mt-4 space-y-2">
+                    <p class="font-semibold text-brand-indigo">+254 722 965180</p>
+                    <p class="font-semibold text-brand-indigo">+254 768 576590</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-brand-green rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-clipboard-list text-white text-2xl"></i>
+                </div>
+                <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-4">2. Assessment</h3>
+                <p class="text-gray-600">
+                    Our clinical team will conduct a comprehensive assessment to understand your 
+                    specific needs and create a personalized treatment plan.
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-brand-green rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-door-open text-white text-2xl"></i>
+                </div>
+                <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-4">3. Admission</h3>
+                <p class="text-gray-600">
+                    Once your treatment plan is ready, we'll help you with the admission process 
+                    and ensure a smooth transition into our program.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Requirements -->
+<section class="py-16 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- What to Bring -->
+            <div class="bg-white rounded-lg p-8 shadow-md">
+                <h3 class="font-poppins font-bold text-2xl text-brand-indigo mb-6">What to Bring</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-id-card text-brand-green text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Identification Documents</h4>
+                            <p class="text-gray-600">National ID, passport, or other valid identification</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-file-medical text-brand-green text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Medical Records</h4>
+                            <p class="text-gray-600">Any relevant medical history, current medications, and previous treatment records</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-money-bill text-brand-green text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Insurance Information</h4>
+                            <p class="text-gray-600">Insurance cards and payment method information</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-tshirt text-brand-green text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Personal Items</h4>
+                            <p class="text-gray-600">Comfortable clothing, toiletries, and personal items (see restrictions below)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Restrictions -->
+            <div class="bg-white rounded-lg p-8 shadow-md">
+                <h3 class="font-poppins font-bold text-2xl text-brand-indigo mb-6">Items Not Allowed</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-ban text-red-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Alcohol & Substances</h4>
+                            <p class="text-gray-600">Any alcohol, illegal drugs, or non-prescribed medications</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-mobile text-red-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Electronic Devices</h4>
+                            <p class="text-gray-600">Mobile phones, tablets, or other electronic devices (secured during treatment)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-pills text-red-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Medications</h4>
+                            <p class="text-gray-600">All medications must be reviewed and approved by our medical team</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-eye text-red-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold">Inappropriate Content</h4>
+                            <p class="text-gray-600">Magazines, books, or materials with inappropriate content</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Programs Available -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="font-poppins font-bold text-3xl md:text-4xl text-brand-indigo mb-4">Available Programs</h2>
+            <p class="text-gray-600 text-lg">Choose the program that best fits your needs</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Residential Program -->
+            <div class="bg-gradient-to-br from-brand-indigo to-purple-800 text-white rounded-lg p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-home text-brand-green text-3xl mr-4"></i>
+                    <h3 class="font-poppins font-bold text-2xl">Residential Program</h3>
+                </div>
+                <p class="text-lg mb-6">
+                    Intensive 24/7 residential treatment in a safe, supportive environment 
+                    with comprehensive medical and therapeutic support.
+                </p>
+                <ul class="space-y-3 mb-6">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        30, 60, or 90-day programs
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        24/7 medical supervision
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Individual and group therapy
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Family counseling sessions
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Recreational activities
+                    </li>
+                </ul>
+                <a href="{{ url_for('contact') }}" class="btn-secondary w-full text-center">Learn More</a>
+            </div>
+            
+            <!-- Outpatient Program -->
+            <div class="bg-white border-2 border-brand-indigo rounded-lg p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-calendar-alt text-brand-indigo text-3xl mr-4"></i>
+                    <h3 class="font-poppins font-bold text-2xl text-brand-indigo">Outpatient Program</h3>
+                </div>
+                <p class="text-lg mb-6 text-gray-600">
+                    Flexible treatment option that allows you to maintain your daily responsibilities 
+                    while receiving professional addiction treatment.
+                </p>
+                <ul class="space-y-3 mb-6">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Flexible scheduling
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Individual counseling
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Group therapy sessions
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Family support programs
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-brand-green mr-3"></i>
+                        Relapse prevention training
+                    </li>
+                </ul>
+                <a href="{{ url_for('contact') }}" class="btn-primary w-full text-center">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Insurance & Payment -->
+<section class="py-16 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="font-poppins font-bold text-3xl md:text-4xl text-brand-indigo mb-4">Payment Options</h2>
+            <p class="text-gray-600 text-lg">We work with you to make treatment affordable</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-brand-green rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-credit-card text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-3">Self-Pay</h3>
+                    <p class="text-gray-600">
+                        Private payment options with flexible payment plans available to make treatment accessible.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-brand-green rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-3">Insurance</h3>
+                    <p class="text-gray-600">
+                        We work with various insurance providers to help cover the cost of treatment.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-brand-green rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-handshake text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-poppins font-semibold text-xl text-brand-indigo mb-3">Financial Aid</h3>
+                    <p class="text-gray-600">
+                        Sliding scale fees and financial assistance available based on need and circumstances.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <p class="text-gray-600 mb-4">
+                    Our admissions team will work with you to determine the best payment option for your situation.
+                </p>
+                <a href="{{ url_for('contact') }}" class="btn-primary">Discuss Payment Options</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Admissions -->
+<section class="py-16 bg-red-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-red-500">
+            <div class="flex items-center mb-6">
+                <i class="fas fa-exclamation-triangle text-red-500 text-3xl mr-4"></i>
+                <h2 class="font-poppins font-bold text-2xl text-red-500">Emergency Admissions</h2>
+            </div>
+            <p class="text-gray-600 text-lg mb-6">
+                If you or someone you know is experiencing a medical emergency related to substance use, 
+                please call emergency services immediately. For urgent admissions, contact us directly.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-lg mb-3">Emergency Contact</h3>
+                    <div class="space-y-2">
+                        <p class="flex items-center">
+                            <i class="fas fa-phone text-brand-green mr-2"></i>
+                            <span class="font-semibold">+254 722 965180</span>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-phone text-brand-green mr-2"></i>
+                            <span class="font-semibold">+254 768 576590</span>
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-3">Available 24/7</h3>
+                    <p class="text-gray-600">
+                        Our crisis intervention team is available around the clock to provide immediate assistance 
+                        and emergency admissions when needed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-brand-indigo text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="font-poppins font-bold text-3xl md:text-4xl mb-4">Ready to Begin Your Recovery?</h2>
+        <p class="text-xl mb-8">
+            Don't wait another day. Contact us now for a confidential consultation and take the first step towards recovery.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('contact') }}" class="btn-primary">Contact Us Now</a>
+            <a href="https://wa.me/254722965180" target="_blank" class="btn-secondary">
+                <i class="fab fa-whatsapp mr-2"></i>WhatsApp Us
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
