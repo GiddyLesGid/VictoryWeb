@@ -5,3 +5,4 @@ oauthlib==3.2.2
 requests==2.31.0
 werkzeug==2.3.7
 Pillow==10.2.0
+vercel-python-wsgi==0.2.3

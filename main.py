@@ -1,4 +1,6 @@
 from app import app
+from vercel_wsgi import handle_wsgi_app
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+# Export a WSGI handler as expected by Vercel
+handler = handle_wsgi_app(app)
+
