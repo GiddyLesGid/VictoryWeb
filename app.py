@@ -140,7 +140,7 @@ def upload_image():
             
             flash('Image uploaded successfully and is pending approval', 'success')
         except Exception as e:
-            flash('Error uploading image', 'error')
+            flash(f'Error uploading image: {str(e)}', 'error')
             logging.error(f"Error uploading image: {e}")
     else:
         flash('Invalid file type. Please upload PNG, JPG, JPEG, GIF, or WebP files.', 'error')
