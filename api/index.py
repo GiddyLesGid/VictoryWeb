@@ -1,5 +1,26 @@
-from app import app
-from vercel_wsgi import handle_wsgi_app
+from flask import Flask
+import os
+import psycopg2
 
-# Entry point for Vercel to serve your Flask app
-handler = handle_wsgi_app(app)
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Victory Rehabilitation Centre"
+
+@app.route('/dbtest')
+def dbtest():
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv("PGHOST"),
+            user=os.getenv("PGUSER"),
+            password=os.getenv("PGPASSWORD"),
+            dbname=os.getenv("PGDATABASE"),
+            port=os.getenv("PGPORT")
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1;")
+        result = cursor.fetchone()
+        return f"Database connected successfully: {result}"
+    except Exception as e:
+        return f"Database connection failed: {e}"
