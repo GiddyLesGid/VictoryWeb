@@ -1,11 +1,3 @@
-from flask import Flask
-import os
-import psycopg2
+from app import app
 
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Victory Rehabilitation Centre"
-
-# No need for handle_wsgi_app or vercel-wsgi
+# This is all you need — Vercel will call this when handling requests
