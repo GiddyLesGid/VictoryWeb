@@ -4,22 +4,18 @@ from datetime import datetime
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256))
-    is_admin = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    username = db.Column(db.String(150), nullable=False, unique=True)
+    email = db.Column(db.String(150), nullable=False, unique=True)
+    password = db.Column(db.String(150), nullable=False)
 
-    # Relationships
-    gallery_images = db.relationship('GalleryImage', backref='user', lazy=True)
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)  # Original filename
+    content_type = db.Column(db.String(50), nullable=False)  # MIME type like 'image/jpeg'
+    data = db.Column(db.LargeBinary, nullable=False)  # Binary image data
+    upload_time = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_by = db.Column(db.Integer, db.ForeignKey('user.id'))  # Optional, can link to User table
 
     def __repr__(self):
-        return f'<User {self.username}>'
-
-class GalleryImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
-    caption = db.Column(db.Text)
-    data = db.Column(db.LargeBinary, nullable=False)  # BLOB data
-    uploaded_by = db.Column(db.Integer_
+        return f"<Image {self.filename}>"
 
