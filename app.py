@@ -13,7 +13,6 @@ from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
 
-# Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
 class Base(DeclarativeBase):
@@ -24,17 +23,14 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-
-# Database config
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///victory_rehab.db")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
 }
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-# Init extensions
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -49,13 +45,11 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
-# Register blueprints
 from auth import auth as auth_blueprint
 from google_auth import google_auth as google_auth_blueprint
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(google_auth_blueprint)
 
-# Template filter to render binary image as base64
 @app.template_filter('b64encode')
 def b64encode_filter(data):
     return base64.b64encode(data).decode('utf-8')
@@ -64,7 +58,6 @@ with app.app_context():
     import models
     db.create_all()
 
-# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -111,14 +104,13 @@ def upload_image():
     if file and allowed_file(file.filename):
         ext = file.filename.rsplit('.', 1)[1].lower()
         filename = f"{uuid.uuid4()}.{ext}"
-        temp_path = os.path.join('/tmp', filename)
+        temp_path = os.path.join('/tmp', filename)  # Use /tmp for Vercel
 
         try:
             image = PILImage.open(file.stream)
             if image.width > 1200 or image.height > 1200:
                 image.thumbnail((1200, 1200), PILImage.Resampling.LANCZOS)
             image.save(temp_path, optimize=True, quality=85)
-
             with open(temp_path, 'rb') as f:
                 image_data = f.read()
 
@@ -128,11 +120,10 @@ def upload_image():
                 caption=caption,
                 uploaded_by=current_user.id,
                 approved=False,
-                image_blob=image_data
+                image_blob=image_data  # Save binary data to DB
             )
             db.session.add(gallery_image)
             db.session.commit()
-
             flash('Image uploaded successfully and is pending approval', 'success')
         except Exception as e:
             logging.error(f"Error uploading image: {e}")
@@ -141,6 +132,14 @@ def upload_image():
         flash('Invalid file type. Please upload PNG, JPG, JPEG, GIF, or WebP files.', 'error')
 
     return redirect(url_for('gallery'))
+
+@app.route('/gallery_image/<int:image_id>')
+def get_gallery_image(image_id):
+    from models import GalleryImage
+    image = GalleryImage.query.get_or_404(image_id)
+    ext = image.filename.rsplit('.', 1)[-1].lower()
+    mime = f'image/{ext}' if ext in ALLOWED_EXTENSIONS else 'application/octet-stream'
+    return app.response_class(image.image_blob, mimetype=mime)
 
 @app.route('/admin')
 @login_required

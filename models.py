@@ -7,15 +7,19 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-class Image(db.Model):
+class GalleryImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)  # Original filename
-    content_type = db.Column(db.String(50), nullable=False)  # MIME type like 'image/jpeg'
-    data = db.Column(db.LargeBinary, nullable=False)  # Binary image data
-    upload_time = db.Column(db.DateTime, default=datetime.utcnow)
-    uploaded_by = db.Column(db.Integer, db.ForeignKey('user.id'))  # Optional, can link to User table
+    filename = db.Column(db.String(255), nullable=False)
+    caption = db.Column(db.Text)
+    image_blob = db.Column(db.LargeBinary, nullable=False)  # Store binary image data
+    uploaded_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    approved = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='gallery_images')
 
     def __repr__(self):
-        return f"<Image {self.filename}>"
-
+        return f"<GalleryImage {self.filename}>"

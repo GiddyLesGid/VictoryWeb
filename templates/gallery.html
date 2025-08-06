@@ -1,24 +1,19 @@
-from app import db
-from flask_login import UserMixin
-from datetime import datetime
+{% extends "base.html" %}
 
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256))
-    is_admin = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+{% block title %}Gallery - Victory Rehabilitation Centre{% endblock %}
 
-    # Relationships
-    gallery_images = db.relationship('GalleryImage', backref='user', lazy=True)
-
-    def __repr__(self):
-        return f'<User {self.username}>'
-
-class GalleryImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
-    caption = db.Column(db.Text)
-    data = db.Column(db.LargeBinary, nullable=False)  # BLOB data
-    uploaded_by = db.Column(db.Integer_
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6">Gallery</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for image in images %}
+            <div class="bg-white rounded shadow p-4 flex flex-col items-center">
+                <img src="{{ url_for('get_gallery_image', image_id=image.id) }}"
+                     alt="{{ image.caption }}"
+                     class="w-full h-64 object-cover rounded mb-2" />
+                <div class="text-center text-gray-700">{{ image.caption }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
