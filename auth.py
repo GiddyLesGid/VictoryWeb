@@ -14,8 +14,8 @@ def login():
         remember = bool(request.form.get('remember'))
         
         user = User.query.filter_by(email=email).first()
-        
-        if user and user.password_hash and password and check_password_hash(user.password_hash, password):
+        # use 'password' field for hashed password
+        if user and user.password and password and check_password_hash(user.password, password):
             login_user(user, remember=remember)
             next_page = request.args.get('next')
             flash('Logged in successfully!', 'success')
@@ -59,7 +59,7 @@ def register():
         user = User()
         user.username = username
         user.email = email
-        user.password_hash = generate_password_hash(password)
+        user.password = generate_password_hash(password)
         
         # Make first user admin
         if User.query.count() == 0:
