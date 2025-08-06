@@ -12,6 +12,7 @@ from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
+from flask_migrate import Migrate 
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,6 +30,7 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
 }
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+migrate = Migrate(app, db)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 db.init_app(app)
@@ -36,7 +38,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please log in to access this page.'
-
+from models import User, GalleryImage
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -54,9 +56,9 @@ app.register_blueprint(google_auth_blueprint)
 def b64encode_filter(data):
     return base64.b64encode(data).decode('utf-8')
 
-with app.app_context():
-    import models
-    db.create_all()
+# with app.app_context():
+#     import models
+#     db.create_all()
 
 @app.route('/')
 def index():

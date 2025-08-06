@@ -6,3 +6,5 @@ requests==2.31.0
 werkzeug==2.3.7
 Pillow==10.2.0
 psycopg2-binary==2.9.9
+Flask-Migrate==4.1.0
+
