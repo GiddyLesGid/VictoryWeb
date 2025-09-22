@@ -10,16 +10,18 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 class GalleryImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)  # Stored in Supabase Storage
     caption = db.Column(db.Text)
-    image_blob = db.Column(db.LargeBinary, nullable=False)
+    filetype = db.Column(db.String(20), default="image")  # "image" or "video"
     uploaded_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     approved = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship('User', backref='gallery_images')
+    user = db.relationship('User', backref='gallery_items')
 
     def __repr__(self):
-        return f"<GalleryImage {self.filename}>"
+        return f"<GalleryItem {self.filename} ({self.filetype})>"
+
