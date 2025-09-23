@@ -1,9 +1,7 @@
 import os
 import logging
 import uuid
-from flask import (
-    Flask, render_template, request, redirect, url_for, flash, send_from_directory
-)
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
@@ -29,11 +27,9 @@ database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise RuntimeError("DATABASE_URL is not set — check your Vercel environment variables!")
 
-# For serverless (Vercel), always use NullPool so no connections are held between requests
+# Serverless-safe
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "poolclass": NullPool
-}
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"poolclass": NullPool}
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit
 
 migrate = Migrate(app, db)
@@ -51,18 +47,14 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please log in to access this page.'
 
-from models import User, GalleryImage
-
+from models import User, GalleryImage  # keep your model names
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @login_manager.user_loader
 def load_user(user_id):
-    from models import User
     return User.query.get(int(user_id))
-
 
 # --- Blueprints ---
 from auth import auth as auth_blueprint
@@ -71,27 +63,22 @@ from google_auth import google_auth as google_auth_blueprint
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(google_auth_blueprint)
 
-
 # --- Routes ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route('/services')
 def services():
     return render_template('services.html')
 
-
 @app.route('/admissions')
 def admissions():
     return render_template('admissions.html')
-
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -100,12 +87,13 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
-
+# --- Gallery ---
 @app.route('/gallery')
 def gallery():
     items = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
+    for item in items:
+        item.url = supabase.storage.from_("gallery").get_public_url(item.filename).public_url
     return render_template('gallery.html', items=items)
-
 
 @app.route('/upload_media', methods=['POST'])
 @login_required
@@ -121,53 +109,50 @@ def upload_media():
         flash('No file selected', 'error')
         return redirect(url_for('gallery'))
 
-    if file and allowed_file(file.filename):
-        ext = file.filename.rsplit('.', 1)[1].lower()
-        filename = f"{uuid.uuid4()}.{ext}"
+    if not allowed_file(file.filename):
+        flash(f'Invalid file type. Allowed: {ALLOWED_EXTENSIONS}', 'error')
+        return redirect(url_for('gallery'))
 
-        # Detect file type
-        mimetype = file.mimetype
-        if mimetype.startswith("image/"):
-            filetype = "image"
-        elif mimetype.startswith("video/"):
-            filetype = "video"
-        else:
-            flash('Unsupported file type', 'error')
-            return redirect(url_for('gallery'))
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    filename = f"{uuid.uuid4()}.{ext}"
 
-        try:
-            # Upload to Supabase storage bucket "gallery"
-            supabase.storage.from_("gallery").upload(filename, file)
-
-            gallery_item = GalleryImage(
-                filename=filename,
-                caption=caption,
-                uploaded_by=current_user.id,
-                approved=False,
-                filetype=filetype
-            )
-            db.session.add(gallery_item)
-            db.session.commit()
-
-            flash(f'{filetype.capitalize()} uploaded successfully and pending approval', 'success')
-
-        except Exception as e:
-            logging.error(f"Error uploading media: {e}")
-            flash(f'Error uploading media: {str(e)}', 'error')
-
+    # Detect type
+    if file.mimetype.startswith("image/"):
+        filetype = "image"
+    elif file.mimetype.startswith("video/"):
+        filetype = "video"
     else:
-        flash('Invalid file type. Allowed: png, jpg, jpeg, gif, webp, mp4, mov, avi', 'error')
+        flash('Unsupported file type', 'error')
+        return redirect(url_for('gallery'))
+
+    try:
+        # Serverless-safe: read file directly into Supabase
+        supabase.storage.from_("gallery").upload(filename, file.stream.read())
+
+        gallery_item = GalleryImage(
+            filename=filename,
+            caption=caption,
+            uploaded_by=current_user.id,
+            approved=False,
+            filetype=filetype
+        )
+        db.session.add(gallery_item)
+        db.session.commit()
+
+        flash(f'{filetype.capitalize()} uploaded successfully and pending approval', 'success')
+
+    except Exception as e:
+        logging.error(f"Error uploading media: {e}")
+        flash(f'Error uploading media: {str(e)}', 'error')
 
     return redirect(url_for('gallery'))
 
-
 @app.route('/media/<filename>')
 def get_media(filename):
-    # Generate a public URL from Supabase storage
-    url = supabase.storage.from_("gallery").get_public_url(filename)
+    url = supabase.storage.from_("gallery").get_public_url(filename).public_url
     return redirect(url)
 
-
+# --- Admin ---
 @app.route('/admin')
 @login_required
 def admin():
@@ -177,9 +162,7 @@ def admin():
 
     pending = GalleryImage.query.filter_by(approved=False).order_by(GalleryImage.created_at.desc()).all()
     approved = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
-
     return render_template('admin.html', pending_images=pending, approved_images=approved)
-
 
 @app.route('/admin/approve_image/<int:image_id>')
 @login_required
@@ -194,7 +177,6 @@ def approve_image(image_id):
     flash('Media approved successfully', 'success')
     return redirect(url_for('admin'))
 
-
 @app.route('/admin/delete_image/<int:image_id>')
 @login_required
 def delete_image(image_id):
@@ -203,21 +185,25 @@ def delete_image(image_id):
         return redirect(url_for('index'))
 
     image = GalleryImage.query.get_or_404(image_id)
+
+    # Delete from Supabase storage
+    try:
+        supabase.storage.from_("gallery").remove([image.filename])
+    except Exception as e:
+        logging.error(f"Failed to delete file from Supabase: {e}")
+
     db.session.delete(image)
     db.session.commit()
     flash('Media deleted successfully', 'success')
     return redirect(url_for('admin'))
 
-
 @app.route('/robots.txt')
 def robots():
-    return send_from_directory(app.static_folder, 'robots.txt')
-
+    return app.send_static_file('robots.txt')
 
 @app.route('/sitemap.xml')
 def sitemap():
-    return send_from_directory(app.static_folder, 'sitemap.xml')
-
+    return app.send_static_file('sitemap.xml')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
