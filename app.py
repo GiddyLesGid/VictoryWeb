@@ -18,6 +18,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
+# --- Flask App ---
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -29,16 +30,15 @@ if not database_url:
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"poolclass": NullPool}
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max upload
 
 migrate = Migrate(app, db)
 
 # --- Supabase setup ---
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("SUPABASE_URL or SUPABASE_KEY is not set — check your Vercel environment variables!")
+    raise RuntimeError("SUPABASE_URL or SUPABASE_KEY not set!")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -52,6 +52,7 @@ login_manager.login_message = 'Please log in to access this page.'
 
 from models import User, GalleryImage
 
+# --- Helpers ---
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -103,50 +104,64 @@ def gallery():
         items = []
     return render_template('gallery.html', items=items)
 
+# --- Multi-file upload ---
 @app.route('/upload_media', methods=['POST'])
 @login_required
 def upload_media():
     if 'file' not in request.files:
-        flash('No file selected', 'error')
+        flash('No files selected.', 'error')
         return redirect(url_for('gallery'))
 
-    file = request.files['file']
-    caption = request.form.get('caption', '')
+    files = request.files.getlist('file')
+    captions = request.form.getlist('caption')  # per-file captions
 
-    if file.filename == '':
-        flash('No file selected', 'error')
+    if not files or all(f.filename == '' for f in files):
+        flash('No files selected.', 'error')
         return redirect(url_for('gallery'))
 
-    if not allowed_file(file.filename):
-        flash(f'Invalid file type. Allowed: {ALLOWED_EXTENSIONS}', 'error')
-        return redirect(url_for('gallery'))
+    uploaded_count = 0
+    errors = []
 
-    ext = file.filename.rsplit('.', 1)[1].lower()
-    filename = f"{uuid.uuid4()}.{ext}"
+    for idx, file in enumerate(files):
+        if not allowed_file(file.filename):
+            errors.append(f"{file.filename} is not an allowed file type.")
+            continue
 
-    if file.mimetype.startswith("image/"):
-        filetype = "image"
-    elif file.mimetype.startswith("video/"):
-        filetype = "video"
-    else:
-        flash('Unsupported file type', 'error')
-        return redirect(url_for('gallery'))
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        filename = f"{uuid.uuid4()}.{ext}"
 
-    try:
-        supabase.storage.from_("gallery").upload(filename, file.stream.read())
-        gallery_item = GalleryImage(
-            filename=filename,
-            caption=caption,
-            uploaded_by=current_user.id,
-            approved=False,
-            filetype=filetype
-        )
-        db.session.add(gallery_item)
+        if file.mimetype.startswith("image/"):
+            filetype = "image"
+        elif file.mimetype.startswith("video/"):
+            filetype = "video"
+        else:
+            errors.append(f"{file.filename} has unsupported mimetype.")
+            continue
+
+        caption = captions[idx] if idx < len(captions) else ""
+
+        try:
+            supabase.storage.from_("gallery").upload(filename, file.stream.read())
+            gallery_item = GalleryImage(
+                filename=filename,
+                caption=caption,
+                uploaded_by=current_user.id,
+                approved=False,
+                filetype=filetype
+            )
+            db.session.add(gallery_item)
+            uploaded_count += 1
+        except Exception as e:
+            logging.error(f"Error uploading {file.filename}: {e}")
+            errors.append(f"Failed to upload {file.filename}")
+
+    if uploaded_count > 0:
         db.session.commit()
-        flash(f'{filetype.capitalize()} uploaded successfully and pending approval', 'success')
-    except Exception as e:
-        logging.error(f"Error uploading media: {e}")
-        flash(f'Error uploading media: {str(e)}', 'error')
+        flash(f'{uploaded_count} file(s) uploaded successfully and pending approval.', 'success')
+
+    if errors:
+        for err in errors:
+            flash(err, 'error')
 
     return redirect(url_for('gallery'))
 
@@ -211,6 +226,7 @@ def robots():
 def sitemap():
     return app.send_static_file('sitemap.xml')
 
+# --- Run ---
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=os.environ.get("FLASK_DEBUG") == "1")
 
