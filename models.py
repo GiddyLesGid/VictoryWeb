@@ -1,4 +1,4 @@
-from app import db
+from app import db, supabase
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -21,6 +21,14 @@ class GalleryImage(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref='gallery_items')
+
+    @property
+    def public_url(self):
+        """Compute the public URL from Supabase only once per request."""
+        try:
+            return supabase.storage.from_("gallery").get_public_url(self.filename).public_url
+        except Exception as e:
+            return ""  # fallback to empty string if any error occurs
 
     def __repr__(self):
         return f"<GalleryItem {self.filename} ({self.filetype})>"

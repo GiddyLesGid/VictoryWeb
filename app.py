@@ -19,7 +19,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # --- Database Config ---
@@ -27,7 +27,6 @@ database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise RuntimeError("DATABASE_URL is not set — check your Vercel environment variables!")
 
-# Serverless-safe
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"poolclass": NullPool}
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit
@@ -37,6 +36,10 @@ migrate = Migrate(app, db)
 # --- Supabase setup ---
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError("SUPABASE_URL or SUPABASE_KEY is not set — check your Vercel environment variables!")
+
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4', 'mov', 'avi'}
@@ -47,7 +50,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please log in to access this page.'
 
-from models import User, GalleryImage  # keep your model names
+from models import User, GalleryImage
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -90,9 +93,14 @@ def contact():
 # --- Gallery ---
 @app.route('/gallery')
 def gallery():
-    items = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
-    for item in items:
-        item.url = supabase.storage.from_("gallery").get_public_url(item.filename).public_url
+    try:
+        items = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
+        for item in items:
+            item.url = supabase.storage.from_("gallery").get_public_url(item.filename).public_url
+    except Exception as e:
+        logging.error(f"Failed to fetch gallery items: {e}")
+        flash('Failed to load gallery items.', 'error')
+        items = []
     return render_template('gallery.html', items=items)
 
 @app.route('/upload_media', methods=['POST'])
@@ -116,7 +124,6 @@ def upload_media():
     ext = file.filename.rsplit('.', 1)[1].lower()
     filename = f"{uuid.uuid4()}.{ext}"
 
-    # Detect type
     if file.mimetype.startswith("image/"):
         filetype = "image"
     elif file.mimetype.startswith("video/"):
@@ -126,9 +133,7 @@ def upload_media():
         return redirect(url_for('gallery'))
 
     try:
-        # Serverless-safe: read file directly into Supabase
         supabase.storage.from_("gallery").upload(filename, file.stream.read())
-
         gallery_item = GalleryImage(
             filename=filename,
             caption=caption,
@@ -138,9 +143,7 @@ def upload_media():
         )
         db.session.add(gallery_item)
         db.session.commit()
-
         flash(f'{filetype.capitalize()} uploaded successfully and pending approval', 'success')
-
     except Exception as e:
         logging.error(f"Error uploading media: {e}")
         flash(f'Error uploading media: {str(e)}', 'error')
@@ -149,8 +152,13 @@ def upload_media():
 
 @app.route('/media/<filename>')
 def get_media(filename):
-    url = supabase.storage.from_("gallery").get_public_url(filename).public_url
-    return redirect(url)
+    try:
+        url = supabase.storage.from_("gallery").get_public_url(filename).public_url
+        return redirect(url)
+    except Exception as e:
+        logging.error(f"Error fetching media URL: {e}")
+        flash('Media not found.', 'error')
+        return redirect(url_for('gallery'))
 
 # --- Admin ---
 @app.route('/admin')
@@ -185,8 +193,6 @@ def delete_image(image_id):
         return redirect(url_for('index'))
 
     image = GalleryImage.query.get_or_404(image_id)
-
-    # Delete from Supabase storage
     try:
         supabase.storage.from_("gallery").remove([image.filename])
     except Exception as e:
@@ -206,5 +212,5 @@ def sitemap():
     return app.send_static_file('sitemap.xml')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=os.environ.get("FLASK_DEBUG") == "1")
 

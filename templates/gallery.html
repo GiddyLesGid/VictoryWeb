@@ -43,12 +43,12 @@
             <div class="bg-white rounded shadow p-4 flex flex-col items-center">
                 
                 {% if item.filetype == "image" %}
-                    <img src="{{ item.url }}"
+                    <img src="{{ item.public_url }}"
                          alt="{{ item.caption or 'Gallery image' }}"
                          class="w-full h-64 object-cover rounded mb-2" />
                 {% elif item.filetype == "video" %}
                     <video controls class="w-full h-64 object-cover rounded mb-2">
-                        <source src="{{ item.url }}" type="video/mp4">
+                        <source src="{{ item.public_url }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 {% endif %}
