@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Victory Rehabilitation Centre - Every Life Matters{% endblock %}</title>
+    
     <!-- ✅ Google Search Console verification -->
     <meta name="google-site-verification" content="kI8rACkwpi9nKdtlz1uGIG2RUxOeIQdlJh3dja40SNQ" />
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -18,8 +20,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/logo.jpg') }}">
+    <!-- ✅ Favicon (ICO format, avoids 404) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     
     <script>
         tailwind.config = {
@@ -191,3 +193,4 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
+
