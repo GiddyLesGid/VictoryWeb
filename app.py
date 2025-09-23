@@ -97,7 +97,17 @@ def gallery():
     try:
         items = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
         for item in items:
-            item.url = supabase.storage.from_("gallery").get_public_url(item.filename).public_url
+            url_data = supabase.storage.from_("gallery").get_public_url(item.filename)
+            # ✅ handle different return formats
+            if isinstance(url_data, dict):
+                if "publicURL" in url_data:
+                    item.url = url_data["publicURL"]
+                elif "data" in url_data and "publicUrl" in url_data["data"]:
+                    item.url = url_data["data"]["publicUrl"]
+                else:
+                    item.url = None
+            else:
+                item.url = url_data
     except Exception as e:
         logging.error(f"Failed to fetch gallery items: {e}")
         flash('Failed to load gallery items.', 'error')
@@ -168,8 +178,13 @@ def upload_media():
 @app.route('/media/<filename>')
 def get_media(filename):
     try:
-        url = supabase.storage.from_("gallery").get_public_url(filename).public_url
-        return redirect(url)
+        url_data = supabase.storage.from_("gallery").get_public_url(filename)
+        if isinstance(url_data, dict):
+            if "publicURL" in url_data:
+                return redirect(url_data["publicURL"])
+            elif "data" in url_data and "publicUrl" in url_data["data"]:
+                return redirect(url_data["data"]["publicUrl"])
+        return redirect(url_for('gallery'))
     except Exception as e:
         logging.error(f"Error fetching media URL: {e}")
         flash('Media not found.', 'error')
