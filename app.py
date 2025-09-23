@@ -1,6 +1,5 @@
 import os
 import logging
-import base64
 import uuid
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, send_from_directory
@@ -8,6 +7,7 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_migrate import Migrate
 from supabase import create_client
@@ -24,17 +24,15 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Database URL (force fail if missing in prod)
+# --- Database Config ---
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise RuntimeError("DATABASE_URL is not set — check your Vercel environment variables!")
 
+# For serverless (Vercel), always use NullPool so no connections are held between requests
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_pre_ping": True,
-    "pool_size": 1,
-    "max_overflow": 0,
-    "pool_recycle": 300,
+    "poolclass": NullPool
 }
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit
 
@@ -105,7 +103,6 @@ def contact():
 
 @app.route('/gallery')
 def gallery():
-    from models import GalleryImage
     items = GalleryImage.query.filter_by(approved=True).order_by(GalleryImage.created_at.desc()).all()
     return render_template('gallery.html', items=items)
 
@@ -174,7 +171,6 @@ def get_media(filename):
 @app.route('/admin')
 @login_required
 def admin():
-    from models import GalleryImage
     if not current_user.is_admin:
         flash('Access denied. Admin privileges required.', 'error')
         return redirect(url_for('index'))
@@ -188,7 +184,6 @@ def admin():
 @app.route('/admin/approve_image/<int:image_id>')
 @login_required
 def approve_image(image_id):
-    from models import GalleryImage
     if not current_user.is_admin:
         flash('Access denied. Admin privileges required.', 'error')
         return redirect(url_for('index'))
@@ -203,7 +198,6 @@ def approve_image(image_id):
 @app.route('/admin/delete_image/<int:image_id>')
 @login_required
 def delete_image(image_id):
-    from models import GalleryImage
     if not current_user.is_admin:
         flash('Access denied. Admin privileges required.', 'error')
         return redirect(url_for('index'))
